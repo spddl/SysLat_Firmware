@@ -41,7 +41,7 @@ void IOC() {
 //-----------------------------------------------------------BEGIN MAIN-----------------------------------------------------------//
 void loop() {
   int timeoutCounter = 0;
-  while (timeoutCounter < 15) {
+  while (timeoutCounter < 14) {
     timeoutCounter++;
     unsigned long timerTotal = timeTheFlash();
 
@@ -49,9 +49,15 @@ void loop() {
       Serial.print(timerTotal); // send µs
       lcd.setCursor(0, 0);
       lcd.clear();
-      lcd.print(static_cast<float>(timerTotal) / 1000); // show ms
+      lcd.print(timerTotal / 1000.0, 3); // show ms
+
+      int delayTime = 400 + timerTotal / 100;
+      int i = 0;
+      while (digitalRead(IOCpin) != LOW || i < delayTime) {
+        _delay_us(100); // 0,1 ms
+        i++;
+      }
       timeoutCounter = 0;
-      delay(40 + timerTotal / 1000); // here we need a value that is above the maximum latency, 40 seems to be ok
     } else {
       if (timeoutCounter == 1) {
         lcd.clear();
@@ -61,8 +67,7 @@ void loop() {
       } else {
         lcd.scrollDisplayLeft();
       }
-
-      delay(200);
+      delay(300);
     }
 
     Serial.write("C"); // Finish
@@ -70,7 +75,6 @@ void loop() {
   }
 
   //Reset
-  lcd.clear();
   timeoutCounter = 0;
 }
 
