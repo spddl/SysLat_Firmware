@@ -51,12 +51,11 @@ void loop() {
       lcd.clear();
       lcd.print(timerTotal / 1000.0, 3); // show ms
 
-      int delayTime = 400 + timerTotal / 100;
-      int i = 0;
-      while (digitalRead(IOCpin) != LOW || i < delayTime) {
-        _delay_us(100); // 0,1 ms
-        i++;
+      int delayTime = 40 + timerTotal / 1000;
+      for (int i = 0; digitalRead(IOCpin) != LOW && i < delayTime; i++) {
+        _delay_ms(1);
       }
+
       timeoutCounter = 0;
     } else {
       if (timeoutCounter == 1) {
@@ -67,15 +66,12 @@ void loop() {
       } else {
         lcd.scrollDisplayLeft();
       }
-      delay(300);
+      delay(500);
     }
 
     Serial.write("C"); // Finish
     Serial.flush();
   }
-
-  //Reset
-  timeoutCounter = 0;
 }
 
 unsigned long timeTheFlash() {
