@@ -8,7 +8,7 @@ bool button_flag = false;
 
 void setup() {
   lcd.begin(8, 1);
-  lcd.setCursor(0, 0);
+  lcd.clear();
   Serial.begin(9600); // start serial port at 9600 bps and wait for port to open:
 
   while (!Serial) {
@@ -47,11 +47,19 @@ void loop() {
 
     if (timerTotal > 1) {
       Serial.print(timerTotal); // send µs
-      lcd.setCursor(0, 0);
-      lcd.clear();
-      lcd.print(timerTotal / 1000.0, 3); // show ms
 
-      int delayTime = 40 + timerTotal / 1000;
+      lcd.clear();
+      float timerTotalFloat = timerTotal / 1000.0;
+      if (100 < timerTotalFloat) {
+        lcd.print(" ");
+      } else if (10 < timerTotalFloat) {
+        lcd.print("  ");
+      } else {
+        lcd.print("   ");
+      }
+      lcd.print(timerTotalFloat, 3); // show ms
+
+      int delayTime = 40 + timerTotal / 1000; // here we need a value that is above the maximum latency, 40 seems to be ok
       for (int i = 0; digitalRead(IOCpin) != LOW && i < delayTime; i++) {
         _delay_ms(1);
       }
